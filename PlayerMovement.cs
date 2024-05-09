@@ -16,16 +16,39 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Jumping")]
     public float jumpPower = 10f;
+    public int maxJumps = 2;
+    int jumpsRemaining;
 
     [Header("TouchingGround")]
     public Transform touchingGroundPos;
     public Vector2 touchingGroundSize = new Vector2(0.5f, 0.05f);
     public LayerMask GroundLayer;
 
+    [Header("Gravity")]
+    public float baseGravity = 2f;
+    public float maxFallSpeed = 18f;
+    public float fallSpeedMultiplier = 2f;
+
     void Update() // Update is called once per frame
     // sets the player’s velocity based on the horizontal input (horizontalMovement) and the defined moveSpeed
     {
         rb.velocity = new Vector2(horizontalMovement * moveSpeed, rb.velocity.y);
+        Grounded();
+        Gravity();
+    }
+
+    private void Gravity()
+    {
+        if(rb.velocity.y < 0)
+        {
+            // fall speed increases as yu fall
+            rb.gravityScale = baseGravity * fallSpeedMultiplier;
+            rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, -maxFallSpeed));
+        }
+        else
+        {
+            rb.gravityScale = baseGravity;
+        }
     }
 
     public void Move(InputAction.CallbackContext context)
@@ -34,30 +57,29 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public void Jump(InputAction.CallbackContext context)
-    // holding down the jump button will be a full jump
-    // quick tap will be half jump
     {
-
-        if (isGrounded())
+        if (jumpsRemaining > 0)
         {
             if (context.canceled)
             {
                 rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
+                jumpsRemaining--;
             }
             else if (context.performed)
             {
                 rb.velocity = new Vector2(rb.velocity.x, jumpPower);
+                jumpsRemaining--;
             }
         }
     }
 
-    private bool isGrounded()
+    private void Grounded()
     {
         if (Physics2D.OverlapBox(touchingGroundPos.position, touchingGroundSize, 0, GroundLayer))
         {
-            return true;
+            jumpsRemaining = maxJumps;
         }
-        return false;
+
     }
 
     private void OnDrawGizmosSelected()
