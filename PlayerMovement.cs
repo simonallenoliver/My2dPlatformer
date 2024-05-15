@@ -29,6 +29,11 @@ public class PlayerMovement : MonoBehaviour
     public float maxFallSpeed = 18f;
     public float fallSpeedMultiplier = 2f;
 
+    [Header("WallCheck")]
+    public Transform wallCheckPos;
+    public Vector2 wallCheckSize = new Vector2(0.5f, 0.05f);
+    public LayerMask WallLayer;
+
     void Update() // Update is called once per frame
     // sets the player’s velocity based on the horizontal input (horizontalMovement) and the defined moveSpeed
     {
@@ -86,5 +91,7 @@ public class PlayerMovement : MonoBehaviour
     {
         Gizmos.color = Color.white;
         Gizmos.DrawWireCube(touchingGroundPos.position, touchingGroundSize);
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireCube(wallCheckPos.position, wallCheckSize);
     }
 }
