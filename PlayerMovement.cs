@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Numerics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -13,6 +14,8 @@ public class PlayerMovement : MonoBehaviour
     public float moveSpeed = 5f;
     // local variable stores the horizontal input value (left or right movement)
     float horizontalMovement;
+    // by default character is facing right
+    bool isFacingRight = true;
 
     [Header("Jumping")]
     public float jumpPower = 10f;
@@ -85,6 +88,16 @@ public class PlayerMovement : MonoBehaviour
             jumpsRemaining = maxJumps;
         }
 
+    }
+
+    private void Flip()
+    {
+        if(isFacingRight && horizontalMovement < 0 || !isFacingRight && horizontalMovement > 0)
+        {
+            isFacingRight = !isFacingRight;
+            Vector3 ls = transform.localScale;
+            ls.x *= -1f;
+        }
     }
 
     private void OnDrawGizmosSelected()
